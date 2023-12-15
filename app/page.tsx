@@ -1,34 +1,19 @@
 "use client";
+
 import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 
 import Home from "./home/page";
+import { useMemo } from "react";
 
 export default function App() {
-  const client = new ApolloClient({
-    uri: "https://countries.trevorblades.com/graphql",
-    cache: new InMemoryCache(),
-  });
-
-  ({
-    query: `
-      query{
-        country(code: "BR") {
-          name
-          native
-          capital
-          emoji
-          currency
-          languages {
-            code
-            name
-          }
-          phone
-        }
-      }      
-    `,
-  });
-
-  console.log(client);
+  const client = useMemo(
+    () =>
+      new ApolloClient({
+        uri: "https://countries.trevorblades.com/graphql",
+        cache: new InMemoryCache(),
+      }),
+    []
+  );
 
   return (
     <ApolloProvider client={client}>
