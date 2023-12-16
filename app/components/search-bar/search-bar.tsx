@@ -1,65 +1,68 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import SearchResult from "@/app/search-result/search-result";
 import { useLazyQuery } from "@apollo/client";
 import { COUNTRIES_QUERY } from "@/app/graphql/queries";
 import { Country } from "@/app/types/country";
-import { match } from "assert";
+import getTimezoneInfo from "./getTimeZoneInfo";
 
 const SearchBar = () => {
   const [searchCountry, { loading, error, data }] = useLazyQuery<{
     countries: Country[];
   }>(COUNTRIES_QUERY);
   const [matches, setMatches] = useState<
-    { type: string; data: any; parentCountry?: any }[]
+    { type: string; data: any; parentCountry?: any; timezone: any }[]
   >([]);
   const searchBarRef = useRef<HTMLInputElement>(null);
 
-  const searchInResponse = (
-    response: Country[],
-    searchString: string
-  ): { type: string; data: any; parentCountry?: any }[] => {
-    const matchingItems: { type: string; data: any; parentCountry?: any }[] =
-      [];
+  const searchInResponse = useCallback(
+    (
+      response: Country[],
+      searchString: string
+    ): { type: string; data: any; parentCountry?: any }[] => {
+      const matchingItems: { type: string; data: any; parentCountry?: any }[] =
+        [];
 
-    for (const country of response) {
-      if (country.name.toLowerCase() === searchString.toLowerCase()) {
-        matchingItems.push({
-          type: "Country",
-          data: country,
-          parentCountry: country,
-        });
-      }
+      for (const country of response) {
+        if (country.name.toLowerCase() === searchString.toLowerCase()) {
+          matchingItems.push({
+            type: "Country",
+            data: country,
+            parentCountry: country,
+          });
+        }
 
-      if (country.states.length > 0) {
-        const states = country.states;
-        for (const state of states) {
-          if (state.name.toLowerCase() === searchString.toLowerCase()) {
-            matchingItems.push({
-              type: "State",
-              data: state,
-              parentCountry: country,
-            });
+        if (country.states.length > 0) {
+          const states = country.states;
+          for (const state of states) {
+            if (state.name.toLowerCase() === searchString.toLowerCase()) {
+              matchingItems.push({
+                type: "State",
+                data: state,
+                parentCountry: country,
+              });
+            }
           }
         }
-      }
 
-      if (
-        country.continent.name.toLowerCase() === searchString.toLowerCase() ||
-        country.continent.code.toLowerCase() === searchString.toLowerCase()
-      ) {
-        matchingItems.push({
-          type: "Continent",
-          data: country.continent,
-          parentCountry: country,
-        });
+        if (
+          country.continent.name.toLowerCase() === searchString.toLowerCase() ||
+          country.continent.code.toLowerCase() === searchString.toLowerCase()
+        ) {
+          matchingItems.push({
+            type: "Continent",
+            data: country.continent,
+            parentCountry: country,
+          });
 
-        return matchingItems;
+          return matchingItems;
+        }
       }
-    }
-    return matchingItems;
-  };
+      return matchingItems;
+    },
+    []
+  );
 
   const formik = useFormik({
     initialValues: {
@@ -70,13 +73,27 @@ const SearchBar = () => {
         .min(2, "Must be at least 2 characters")
         .required("Required"),
     }),
-    onSubmit: (values: { searchString: string }) => {
-      const matches = searchInResponse(
-        data?.countries || [],
-        values.searchString
-      );
-      setMatches(matches);
-      console.log("MATCHES:", matches);
+    onSubmit: async (values: { searchString: string }) => {
+      const countriesResponse = data?.countries || [];
+      const matches = searchInResponse(countriesResponse, values.searchString);
+
+      try {
+        const timezoneInfo = await getTimezoneInfo(values.searchString);
+        console.log("Timezone Info:", timezoneInfo);
+
+        const matchesWithTimezone = matches.map((matchItem) => ({
+          ...matchItem,
+          timezone: timezoneInfo,
+        }));
+
+        setMatches(matchesWithTimezone);
+      } catch (error) {
+        console.error("Error fetching timezone information:", error);
+
+        setMatches([]);
+        console.log("MATCHES:", matches);
+      }
+
       formik.resetForm();
     },
   });
@@ -106,7 +123,13 @@ const SearchBar = () => {
         ) : null}
       </form>
       {error && <div>Error: {error.message}</div>}
-      {loading ? <h1>Loading...</h1> : <SearchResult info={...matches} />}
+      {matches.length > 0 ? (
+        <SearchResult info={matches} />
+      ) : (
+        <div className="border-2 mt-10 p-8 flex justify-center border-gray-100">
+          <h2>No results found</h2>
+        </div>
+      )}
     </>
   );
 };
