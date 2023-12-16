@@ -12,19 +12,19 @@ function SearchResult({ info }: any) {
 
   if (info.length > 0) {
     info = info[0];
-    console.log("SEARCH INFO: ", info);
+    // console.log("SEARCH INFO: ", info);
   }
 
-  switch (info["type"]) {
-    case "Country":
-      console.log("COUNTRY INFO: ", info);
-    case "State":
-      console.log("STATE INFO: ", info);
-    case "Continent":
-      console.log("CONTINENT INFO: ", info);
-    default:
-      console.log("INFO: ", info.type);
-  }
+  // switch (info["type"]) {
+  //   case "Country":
+  //     console.log("COUNTRY INFO: ", info);
+  //   case "State":
+  //     console.log("STATE INFO: ", info);
+  //   case "Continent":
+  //     console.log("CONTINENT INFO: ", info);
+  //   default:
+  //     console.log("INFO: ", info.type);
+  // }
 
   return (
     <div className="flex flex-col border p-8 ">
@@ -45,7 +45,7 @@ function SearchResult({ info }: any) {
         <p>Currency:{info?.data?.currency}</p>
         <p>Emoji:{info?.data?.emoji}</p>
         <p>Phone:{info?.data?.phone}</p>
-        {/* <p>languages:{languages[0].name}</p> */}
+        {/* <p>languages:{info?.data?.languages[0].name}</p> */}
       </div>
     </div>
   );
