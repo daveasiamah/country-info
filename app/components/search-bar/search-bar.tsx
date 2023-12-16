@@ -5,6 +5,7 @@ import SearchResult from "@/app/search-result/search-result";
 import { useLazyQuery } from "@apollo/client";
 import { COUNTRIES_QUERY } from "@/app/graphql/queries";
 import { Country } from "@/app/types/country";
+import { match } from "assert";
 
 const SearchBar = () => {
   const [searchCountry, { loading, error, data }] = useLazyQuery<{
@@ -22,37 +23,41 @@ const SearchBar = () => {
     const matchingItems: { type: string; data: any; parentCountry?: any }[] =
       [];
 
-    response.forEach((country) => {
-      if (
-        country.name.toLowerCase().includes(searchString.toLowerCase()) ||
-        country.code.toLowerCase().includes(searchString.toLowerCase())
-      ) {
-        matchingItems.push({ type: "Country", data: country });
+    for (const country of response) {
+      if (country.name.toLowerCase() === searchString.toLowerCase()) {
+        matchingItems.push({
+          type: "Country",
+          data: country,
+          parentCountry: country,
+        });
       }
 
-      country.states.forEach((state) => {
-        if (state.name.toLowerCase().includes(searchString.toLowerCase())) {
-          matchingItems.push({
-            type: "State",
-            data: state,
-            parentCountry: country,
-          });
+      if (country.states.length > 0) {
+        const states = country.states;
+        for (const state of states) {
+          if (state.name.toLowerCase() === searchString.toLowerCase()) {
+            matchingItems.push({
+              type: "State",
+              data: state,
+              parentCountry: country,
+            });
+          }
         }
-      });
+      }
 
       if (
-        country.continent.name
-          .toLowerCase()
-          .includes(searchString.toLowerCase())
+        country.continent.name.toLowerCase() === searchString.toLowerCase() ||
+        country.continent.code.toLowerCase() === searchString.toLowerCase()
       ) {
         matchingItems.push({
           type: "Continent",
           data: country.continent,
           parentCountry: country,
         });
-      }
-    });
 
+        return matchingItems;
+      }
+    }
     return matchingItems;
   };
 
