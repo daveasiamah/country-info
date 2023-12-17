@@ -1,5 +1,7 @@
 "use client";
 import dynamic from "next/dynamic";
+import { colorScale, countries } from "./Countries";
+import { useCountryData } from "@/app/hooks/useCountryData";
 import { worldMill } from "@react-jvectormap/world";
 
 const VectorMap = dynamic(
@@ -8,8 +10,6 @@ const VectorMap = dynamic(
   { ssr: false }
 );
 
-import { colorScale, countries } from "./Countries";
-import { useCountryData } from "@/app/hooks/useCountryData";
 function InteractiveMap() {
   const { countryData, updateCountryData } = useCountryData();
 
@@ -41,10 +41,10 @@ function InteractiveMap() {
 
   const handleMapClick = (event, code, label) => {
     console.log("Country is: ", label, code);
-    const countryName =
-      countryData.find((country) => country.code === code)?.name || "";
+    const countryName = countryData.find((country) => country.code === code);
+    const country = countryName?.name;
     console.log("Country is: ", countryName);
-    // updateCountryData(country);
+    updateCountryData(country);
   };
 
   return (
