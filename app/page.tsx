@@ -20,15 +20,16 @@ export default function App() {
       <CountryDataProvider>
         <main className="flex flex-col p-10">
           <h1 className="text-3xl font-bold">Countries Info</h1>
-          <div className="flex flex-col md:flex-row md:gap-8">
+          <div className="flex flex-wrap">
             <div style={{ width: "660px" }}>
               <h2 className="mt-10 text-lg">
                 Search countries, states, or continents
               </h2>
               <SearchBar />
             </div>
-            <InteractiveMap />
-            <div className="flex flex-col md:flex-grow"></div>
+            <div className="flex flex-col md:flex-grow max-w-screen-lg">
+              <InteractiveMap />
+            </div>
           </div>
         </main>
       </CountryDataProvider>

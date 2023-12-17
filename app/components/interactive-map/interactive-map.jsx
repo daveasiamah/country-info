@@ -43,18 +43,18 @@ function InteractiveMap() {
     console.log("Country is: ", label, code);
     const countryName =
       countryData.find((country) => country.code === code)?.name || "";
-    console.log("Country is: ", countryName);
+    console.log("Matched Country is: ", countryName);
     // updateCountryData(country);
   };
 
   return (
-    <div style={{ margin: "auto", width: "700px", height: "600px" }}>
+    <div style={{ marginLeft: "80px", width: "100%", height: "650px" }}>
       <VectorMap
         map={worldMill}
-        containerStyle={{
-          width: "700px",
-          height: "600px",
-        }}
+        // containerStyle={{
+        //   width: "100px",
+        //   height: "600px",
+        // }}
         backgroundColor="#b7c0c9"
         series={{
           regions: [
