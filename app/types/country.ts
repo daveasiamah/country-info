@@ -18,3 +18,9 @@ type Language = {
     continent: Continent;
     languages: Language[];
   };
+
+
+  export type CountryData = {
+    code:string;
+    name:string;
+  }

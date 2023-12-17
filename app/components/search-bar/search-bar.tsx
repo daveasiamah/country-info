@@ -4,8 +4,9 @@ import * as Yup from "yup";
 import SearchResult from "@/app/search-result/search-result";
 import { useLazyQuery } from "@apollo/client";
 import { COUNTRIES_QUERY } from "@/app/graphql/queries";
-import { Country } from "@/app/types/country";
+import { Country, CountryData } from "@/app/types/country";
 import getTimezoneInfo from "./getTimeZoneInfo";
+import { useCountryData } from "@/app/hooks/useCountryData";
 
 const SearchBar = () => {
   const [searchCountry, { loading, error, data }] = useLazyQuery<{
@@ -15,6 +16,8 @@ const SearchBar = () => {
     { type: string; data: any; parentCountry?: any; timezone: any }[]
   >([]);
   const searchBarRef = useRef<HTMLInputElement>(null);
+
+  const { countryData, updateCountryData } = useCountryData();
 
   const searchInResponse = useCallback(
     (
@@ -79,12 +82,19 @@ const SearchBar = () => {
 
       try {
         const timezoneInfo = await getTimezoneInfo(values.searchString);
-        console.log("Timezone Info:", timezoneInfo);
-
         const matchesWithTimezone = matches.map((matchItem) => ({
           ...matchItem,
           timezone: timezoneInfo,
         }));
+
+        const mapCountryData: CountryData = {
+          code: matches[0]?.data?.code || "",
+          name: matches[0]?.data?.name || "",
+        };
+
+        const currentCountryData = countryData;
+        const updatedCountryData = [...currentCountryData, mapCountryData];
+        updateCountryData(updatedCountryData);
 
         setMatches(matchesWithTimezone);
       } catch (error) {
