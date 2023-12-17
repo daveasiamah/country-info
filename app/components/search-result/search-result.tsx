@@ -1,5 +1,5 @@
 import React from "react";
-import { SearchResultProps } from "../types/search-results";
+import { SearchResultProps } from "../../types/search-results";
 
 function SearchResult({ info }: SearchResultProps) {
   const result = info[0];

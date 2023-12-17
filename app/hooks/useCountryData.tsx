@@ -1,9 +1,9 @@
+"use client";
 import React, { createContext, useState, useContext, ReactNode } from "react";
 
 type CountryData = {
   code: string;
   name: string;
-  // Other properties specific to your country data
 };
 
 const defaultCountryData: CountryData[] = [];

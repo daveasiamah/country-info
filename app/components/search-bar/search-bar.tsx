@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import SearchResult from "@/app/search-result/search-result";
+import SearchResult from "@/app/components/search-result/search-result";
 import { useLazyQuery } from "@apollo/client";
 import { COUNTRIES_QUERY } from "@/app/graphql/queries";
 import { Country, CountryData } from "@/app/types/country";
