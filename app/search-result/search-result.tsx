@@ -1,18 +1,8 @@
 import React from "react";
-import { Country } from "../types/country";
-
-interface SearchResultProps {
-  info: {
-    timezone: any;
-    type: string;
-    data: any;
-    parentCountry?: any;
-  }[];
-}
+import { SearchResultProps } from "../types/search-results";
 
 function SearchResult({ info }: SearchResultProps) {
   const result = info[0];
-
   if (!result) {
     return <div>No information available</div>;
   }
