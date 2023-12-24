@@ -21,7 +21,7 @@ export default function App() {
         <h1 className="text-3xl font-bold pl-10 pt-10 text-orange-500">
           Countries Info
         </h1>
-        <div className="flex flex-col md:flex-row p-10 h-[60lvh]">
+        <div className="flex flex-col md:flex-row p-10 h-['60lvh']">
           <div className="w-full md:w-1/3 border p-6">
             <SearchBar />
           </div>

@@ -1,3 +1,4 @@
+"use client";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -12,7 +13,7 @@ interface InfoProp {
   type: string;
   data: any;
   parentCountry?: any;
-  timezone: any;
+  timezone?: any;
 }
 
 const SearchBar = () => {
@@ -22,6 +23,7 @@ const SearchBar = () => {
   const [matches, setMatches] = useState<InfoProp[]>([]);
   const searchBarRef = useRef<HTMLInputElement>(null);
   const { countryData, updateCountryData } = useCountryData();
+  const [searchString, setSearchString] = useState("");
 
   const searchInResponse = useCallback(
     (
@@ -114,7 +116,20 @@ const SearchBar = () => {
 
   useEffect(() => {
     searchCountry();
-  }, []);
+    formik.setFieldValue("searchString", searchString);
+  }, [searchString]);
+
+  useEffect(() => {
+    setSearchString(countryData.name);
+  }, [countryData]);
+
+  useEffect(() => {
+    if (searchString) {
+      const countriesResponse = data?.countries || [];
+      const matches = searchInResponse(countriesResponse, searchString);
+      setMatches(matches);
+    }
+  }, [searchString]);
 
   return (
     <>
@@ -161,7 +176,9 @@ const SearchBar = () => {
           <div className="text-red-800 mb-4 mt-2 ml-2">
             {formik.errors.searchString?.toString()}
           </div>
-        ) : null}
+        ) : (
+          <div className="mt-4"></div>
+        )}
       </form>
       {error && <div>Error: {error.message}</div>}
       {matches.length > 0 ? (
