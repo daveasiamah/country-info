@@ -1,97 +1,94 @@
 "use client";
-import dynamic from "next/dynamic";
-import { worldMill } from "@react-jvectormap/world";
-
-const VectorMap = dynamic(
-  // @ts-ignore
-  () => import("@react-jvectormap/core").then((m) => m.VectorMap),
-  { ssr: false }
-);
-
-import { colorScale, countries } from "./Countries";
+import React, { useEffect, useState } from "react";
+import Highcharts from "highcharts";
+import HighchartsMap from "highcharts/modules/map";
+import worldMap from "@highcharts/map-collection/custom/world.geo.json";
+import data from "./countries.json";
 import { useCountryData } from "@/app/hooks/useCountryData";
+
+if (typeof Highcharts === "object") {
+  HighchartsMap(Highcharts);
+}
+
 function InteractiveMap() {
+  const [searchValue, setSearchValue] = useState("");
   const { countryData, updateCountryData } = useCountryData();
 
-  const handleRegionTipShow = (event, label, code) => {
-    const countryName =
-      countryData.find((country) => country.code === code)?.name || "";
-    return label.html(`
-      <div style="background-color: #010101; border-radius: 6px; min-height: 50px; width: 125px; color: white; padding-left: 10px;">
-        <p>
-          <b>${label.html()}</b>
-        </p>
-        <p>${countryName}</p>
-      </div>
-    `);
-  };
+  useEffect(() => {
+    console.log("COUNTRY DATA IN CONTEXT:", countryData);
+    Highcharts.mapChart("world-map", {
+      chart: {
+        map: worldMap,
+        height: "40%", // Set the height of the map
+        // width: "100%", // Set the width of the map
+        zoomType: "x", // Enable zoom on x-axis (horizontal)
+        panning: true, // Enable panning
+        panKey: "shift",
+        style: {
+          cursor: "pointer",
+          width: "100%",
+        },
+      },
+      title: {
+        text: "World Map",
+      },
+      plotOptions: {
+        series: {
+          events: {
+            click: function (e) {
+              const countryName = e.point.name;
+              const countryCode = e.point.properties["hc-a2"];
+              console.log("CLICKED ON MAP:", countryName, countryCode);
+              updateCountryData({
+                name: countryName,
+                code: countryCode,
+              });
+            },
+          },
+        },
+      },
+      navigation: {
+        buttonOptions: {
+          align: "left",
+          theme: {
+            stroke: "#3b3b3b",
+          },
+        },
+      },
 
-  const handleMarkerTipShow = (event, label, code) => {
-    const countryName =
-      countryData.find((country) => country.code === code)?.name || "";
-    return label.html(`
-      <div style="background-color: white; border-radius: 6px; min-height: 50px; width: 125px; color: black !important; padding-left: 10px;">
-        <p style="color: black !important;">
-          <b>${label.html()}</b>
-        </p>
-        <p>${countryName}</p>
-      </div>
-    `);
-  };
+      mapNavigation: {
+        enabled: true,
+        enableDoubleClickZoomTo: true,
+      },
 
-  const handleMapClick = (event, code, label) => {
-    console.log("Country is: ", label, code);
-    const countryName =
-      countryData.find((country) => country.code === code)?.name || "";
-    console.log("Matched Country is: ", countryName);
-    // updateCountryData(country);
-  };
+      // colorAxis: {},
+      series: [
+        {
+          mapData: worldMap,
+          name: "Countries",
+          allowPointSelect: true,
+          joinBy: null,
+          keys: ["name", "code"],
+          states: {
+            hover: {
+              color: "#ec9e22",
+            },
+          },
+          dataLabels: {
+            enabled: true,
+            format: "{point.properties.name}",
+          },
+          data,
+          color: "#c5c5c5", // Set the color of the points
+        },
+      ],
+    });
+  }, [countryData]);
 
   return (
-    <div style={{ marginLeft: "80px", width: "100%", height: "650px" }}>
-      <VectorMap
-        map={worldMill}
-        // containerStyle={{
-        //   width: "100px",
-        //   height: "600px",
-        // }}
-        backgroundColor="#b7c0c9"
-        series={{
-          regions: [
-            {
-              scale: colorScale,
-              values: countries,
-              min: 0,
-              max: 100,
-            },
-          ],
-        }}
-        onRegionTipShow={function reginalTip(event, label, code) {
-          return label.html(`
-                  <div style="background-color: black; border-radius: 6px; min-height: 50px; width: 125px; color: white"; padding-left: 10px>
-                    <p>
-                    <b>
-                    ${label.html()}
-                    </b>
-                    </p>
-                    <p>
-                    ${countries[code]}
-                    </p>
-                    </div>`);
-        }}
-        onMarkerTipShow={function markerTip(event, label, code) {
-          return label.html(`
-                  <div style="background-color: white; border-radius: 6px; min-height: 50px; width: 125px; color: black !important; padding-left: 10px>
-                    <p style="color: black !important;">
-                    <b>
-                    ${label.html()}
-                    </b>
-                    </p>
-                    </div>`);
-        }}
-        onRegionClick={handleMapClick}
-      />
-    </div>
+    // <div className="flex flex-col md:flex-row p-10">
+    <div id="world-map" className="p-10 border border-red-500"></div>
+    // </div>
   );
 }
 

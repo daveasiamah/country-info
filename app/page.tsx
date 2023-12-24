@@ -18,20 +18,17 @@ export default function App() {
   return (
     <ApolloProvider client={client}>
       <CountryDataProvider>
-        <main className="flex flex-col p-10">
-          <h1 className="text-3xl font-bold">Countries Info</h1>
-          <div className="flex flex-wrap">
-            <div style={{ width: "660px" }}>
-              <h2 className="mt-10 text-lg">
-                Search countries, states, or continents
-              </h2>
-              <SearchBar />
-            </div>
-            <div className="flex flex-col md:flex-grow max-w-screen-lg">
-              <InteractiveMap />
-            </div>
+        <h1 className="text-3xl font-bold pl-10 pt-10 text-orange-500">
+          Countries Info
+        </h1>
+        <div className="flex flex-col md:flex-row p-10 h-[60lvh]">
+          <div className="w-full md:w-1/3 border p-6">
+            <SearchBar />
           </div>
-        </main>
+          <div className="w-full border md:w-2/3 md:ml-4 mt-4 md:mt-0  p-2 flex-grow">
+            <InteractiveMap />
+          </div>
+        </div>
       </CountryDataProvider>
     </ApolloProvider>
   );
