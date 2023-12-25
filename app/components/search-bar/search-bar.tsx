@@ -1,3 +1,4 @@
+"use client";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -8,16 +9,21 @@ import { Country, CountryData } from "@/app/types/country";
 import getTimezoneInfo from "./getTimeZoneInfo";
 import { useCountryData } from "@/app/hooks/useCountryData";
 
+interface InfoProp {
+  type: string;
+  data: any;
+  parentCountry?: any;
+  timezone?: any;
+}
+
 const SearchBar = () => {
   const [searchCountry, { loading, error, data }] = useLazyQuery<{
     countries: Country[];
   }>(COUNTRIES_QUERY);
-  const [matches, setMatches] = useState<
-    { type: string; data: any; parentCountry?: any; timezone: any }[]
-  >([]);
+  const [matches, setMatches] = useState<InfoProp[]>([]);
   const searchBarRef = useRef<HTMLInputElement>(null);
-
   const { countryData, updateCountryData } = useCountryData();
+  const [searchString, setSearchString] = useState("");
 
   const searchInResponse = useCallback(
     (
@@ -93,7 +99,7 @@ const SearchBar = () => {
         };
 
         const currentCountryData = countryData;
-        const updatedCountryData = [...currentCountryData, mapCountryData];
+        const updatedCountryData = mapCountryData;
         updateCountryData(updatedCountryData);
 
         setMatches(matchesWithTimezone);
@@ -110,27 +116,69 @@ const SearchBar = () => {
 
   useEffect(() => {
     searchCountry();
-  }, []);
+    formik.setFieldValue("searchString", searchString);
+  }, [searchString]);
+
+  useEffect(() => {
+    setSearchString(countryData.name);
+  }, [countryData]);
+
+  useEffect(() => {
+    if (searchString) {
+      const countriesResponse = data?.countries || [];
+      const matches = searchInResponse(countriesResponse, searchString);
+      setMatches(matches);
+    }
+  }, [searchString]);
 
   return (
     <>
       <form onSubmit={formik.handleSubmit} className="flex flex-col">
-        <input
-          type="search"
-          placeholder="Country name, state name, continent name..."
-          className="text-md text-gray-800 w-full bg-gray-100 mt-4 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500 
-          focus:border-transparent focus:ring-offset-2 focus:ring-offset-gray-200 transition-all duration-200 ease-in-out hover:bg- border-2 border-gray-400 rounded-lg px-2 py-3"
-          name="searchString"
-          value={formik.values.searchString}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          ref={searchBarRef}
-        />
+        <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+          <input
+            type="text"
+            placeholder="Country name, state name, continent name..."
+            className="w-full py-2 px-4 outline-none text-gray-800"
+            name="searchString"
+            value={formik.values.searchString}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            ref={searchBarRef}
+          />
+          <button
+            type="submit"
+            className="bg-blue-500 text-white px-4 py-2"
+            onClick={() => formik.handleSubmit}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 11a4 4 0 11-8 0 4 4 0 018 0z"
+              />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M17 17l-5-5"
+              />
+            </svg>
+          </button>
+        </div>
         {formik.touched.searchString && formik.errors.searchString ? (
-          <div className="text-red-800 mb-4">
+          <div className="text-red-800 mb-4 mt-2 ml-2">
             {formik.errors.searchString?.toString()}
           </div>
-        ) : null}
+        ) : (
+          <div className="mt-4"></div>
+        )}
       </form>
       {error && <div>Error: {error.message}</div>}
       {matches.length > 0 ? (

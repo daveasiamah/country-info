@@ -6,11 +6,14 @@ type CountryData = {
   name: string;
 };
 
-const defaultCountryData: CountryData[] = [];
+const defaultCountryData: CountryData = {
+  code: "",
+  name: "",
+};
 
 type CountryContextType = {
-  countryData: CountryData[];
-  updateCountryData: React.Dispatch<React.SetStateAction<CountryData[]>>;
+  countryData: CountryData;
+  updateCountryData: React.Dispatch<React.SetStateAction<CountryData>>;
 };
 
 export const CountryDataContext = createContext<CountryContextType>({
@@ -25,7 +28,7 @@ type CountryDataProviderProps = {
 export const CountryDataProvider = ({ children }: CountryDataProviderProps) => {
   const [countryData, setCountryData] = useState(defaultCountryData);
 
-  const updateCountryData = (data: React.SetStateAction<CountryData[]>) => {
+  const updateCountryData = (data: React.SetStateAction<CountryData>) => {
     setCountryData(data);
   };
 

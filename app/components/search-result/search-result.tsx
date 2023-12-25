@@ -50,22 +50,34 @@ function SearchResult({ info }: SearchResultProps) {
             Phone:
             <span className="pl-2 text-gray-500">{result?.data?.phone}</span>
           </p>
-          <p className="pl-3 text-xl">
-            Languages:
+          <div className="pl-3 text-xs flex flex-wrap">
+            <p className="text-xl">Languages:</p>
             {result.type === "Country" || result.type === "State"
               ? result?.parentCountry?.languages?.map(
                   (language: any, index: number) => (
-                    <span key={index} className="pl-2 text-gray-500">
-                      {language.name},
-                    </span>
+                    <div
+                      className="flex align-middle justify-center gap-2"
+                      key={index}
+                    >
+                      {/* <span className="text-gray-500">{language.name}</span> */}
+                      <span
+                        key={index}
+                        className="pl-2 text-gray-500 text-['10px']"
+                      >
+                        {language.name},
+                      </span>
+                    </div>
                   )
                 )
               : result?.data?.languages?.map((lan: any, index: number) => (
-                  <span key={index} className="pl-2 text-gray-500">
+                  <span
+                    key={index}
+                    className="pl-2 text-gray-500 text-['10px']"
+                  >
                     {lan.name},
                   </span>
                 ))}
-          </p>
+          </div>
         </div>
       </div>
     </>
