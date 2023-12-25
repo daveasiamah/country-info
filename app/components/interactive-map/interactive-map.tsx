@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import * as Highcharts from "highcharts";
+import * as Highcharts from "highcharts/highmaps";
 import HighchartsExporting from "highcharts/modules/exporting";
 import HighchartsReact, {
   HighchartsReactProps,
