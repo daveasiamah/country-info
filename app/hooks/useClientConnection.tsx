@@ -20,7 +20,7 @@ const useClientConnection = () => {
     return () => {
       client?.stop();
     };
-  }, []);
+  }, [client]);
 
   return client;
 };
