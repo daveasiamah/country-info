@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import { SearchResultProps } from "../../types/search-results";
 
 function SearchResult({ info }: SearchResultProps) {
@@ -84,4 +84,4 @@ function SearchResult({ info }: SearchResultProps) {
   );
 }
 
-export default SearchResult;
+export default memo(SearchResult);
