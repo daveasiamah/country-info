@@ -14,11 +14,11 @@ if (typeof Highcharts === "object") {
   HighchartsExporting(Highcharts);
 }
 
-function InteractiveMap(props: HighchartsReactProps) {
+function InteractiveMap() {
   const { countryData, updateCountryData } = useCountryData();
   const chartComponentRef = useRef<HighchartsReactRefObject>(null);
 
-  let mapOptions = {
+  let mapOptions: HighchartsReactProps = {
     exporting: {
       buttons: {
         contextButton: {
@@ -28,13 +28,9 @@ function InteractiveMap(props: HighchartsReactProps) {
     },
     chart: {
       map: worldMap,
-      height: "70%",
-      zoomType: "x",
-      panning: true,
-      panKey: "shift",
+      height: 800,
       style: {
         cursor: "pointer",
-        width: "100%",
       },
       backgroundColor: "#ffffff",
     },
@@ -119,17 +115,21 @@ function InteractiveMap(props: HighchartsReactProps) {
   };
 
   const [chartOptions, setChartOptions] = useState(mapOptions);
+  const MemoizedContainer = useMemo(() => {
+    return {
+      style: { width: "100%", height: "500px" },
+    };
+  }, []);
 
   return (
-    <div className="flex flex-col">
-      <HighchartsReact
-        options={chartOptions}
-        constructorType={"mapChart"}
-        highcharts={Highcharts}
-        ref={chartComponentRef}
-        {...props}
-      />
-    </div>
+    <HighchartsReact
+      options={chartOptions}
+      constructorType={"mapChart"}
+      highcharts={Highcharts}
+      ref={chartComponentRef}
+      // {...props}
+      containerProps={MemoizedContainer.style}
+    />
   );
 }
 

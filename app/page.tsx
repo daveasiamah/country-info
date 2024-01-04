@@ -4,6 +4,7 @@ import InteractiveMap from "./components/interactive-map/interactive-map";
 import SearchBar from "./components/search-bar/search-bar";
 import { CountryDataProvider } from "./hooks/useCountryData";
 import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
+import "./layout.css";
 
 export default function App() {
   const client = useMemo(
@@ -21,14 +22,14 @@ export default function App() {
         <h1 className="text-3xl font-bold pl-10 pt-10 text-orange-500">
           Countries Info
         </h1>
-        <div className="flex flex-col md:flex-row p-10 h-['60lvh']">
-          <div className="w-full md:w-1/3 border p-6">
+        <section className="main-container">
+          <div className="left border">
             <SearchBar />
           </div>
-          <div className="w-full border md:w-2/3 md:ml-4 mt-4 md:mt-0  p-2 flex-grow">
+          <div className="right border">
             <InteractiveMap />
           </div>
-        </div>
+        </section>
       </CountryDataProvider>
     </ApolloProvider>
   );
